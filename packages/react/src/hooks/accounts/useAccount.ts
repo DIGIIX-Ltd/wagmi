@@ -3,11 +3,12 @@ import { GetAccountResult, getAccount, watchAccount } from '@wagmi/core'
 import { useQueryClient } from 'react-query'
 
 import { QueryConfig } from '../../types'
-import { useQuery } from '../utils'
+import { useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseAccountConfig = Pick<
   QueryConfig<GetAccountResult, Error>,
-  'suspense' | 'onError' | 'onSettled' | 'onSuccess'
+  'initialData' | 'suspense' | 'onError' | 'onSettled' | 'onSuccess'
 >
 
 export const queryKey = () => [{ entity: 'account' }] as const
@@ -19,6 +20,7 @@ const queryFn = () => {
 }
 
 export function useAccount({
+  initialData,
   suspense,
   onError,
   onSettled,
@@ -26,7 +28,8 @@ export function useAccount({
 }: UseAccountConfig = {}) {
   const queryClient = useQueryClient()
 
-  const accountQuery = useQuery(queryKey(), queryFn, {
+  const accountQueryResult = useQuery(queryKey(), queryFn, {
+    initialData,
     staleTime: 0,
     suspense,
     onError,
@@ -41,5 +44,7 @@ export function useAccount({
     return unwatch
   }, [queryClient])
 
-  return accountQuery
+  return useDeferResult(accountQueryResult, noopQueryResult, {
+    enabled: !initialData,
+  })
 }

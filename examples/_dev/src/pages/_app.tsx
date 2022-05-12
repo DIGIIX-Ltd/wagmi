@@ -74,7 +74,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <title>wagmi</title>
       </NextHead>
 
-      <Provider client={client}>
+      <Provider client={client} deferResult>
         <Component {...pageProps} />
       </Provider>
     </>

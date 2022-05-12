@@ -5,7 +5,8 @@ import {
 } from '@wagmi/core'
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseWaitForTransactionArgs = Partial<WaitForTransactionArgs>
 
@@ -46,6 +47,7 @@ export function useWaitForTransaction({
   wait,
   cacheTime,
   enabled = true,
+  initialData,
   staleTime,
   suspense,
   onError,
@@ -54,12 +56,13 @@ export function useWaitForTransaction({
 }: UseWaitForTransactionArgs & UseWaitForTransactionConfig = {}) {
   const chainId = useChainId({ chainId: chainId_ })
 
-  return useQuery(
+  const waitForTransactionQueryResult = useQuery(
     queryKey({ chainId, confirmations, hash, timeout, wait }),
     queryFn,
     {
       cacheTime,
       enabled: Boolean(enabled && (hash || wait)),
+      initialData,
       staleTime,
       suspense,
       onError,
@@ -67,4 +70,8 @@ export function useWaitForTransaction({
       onSuccess,
     },
   )
+
+  return useDeferResult(waitForTransactionQueryResult, noopQueryResult, {
+    enabled: !initialData,
+  })
 }

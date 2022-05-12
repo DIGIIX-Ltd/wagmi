@@ -10,7 +10,8 @@ import { useQueryClient } from 'react-query'
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
 import { useBlockNumber } from '../network-status'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 type UseContractReadArgs = Partial<ReadContractConfig> & {
   /** If set to `true`, the cache will depend on the block number */
@@ -64,6 +65,7 @@ export function useContractRead(
     cacheOnBlock = false,
     cacheTime,
     enabled: enabled_ = true,
+    initialData,
     staleTime,
     suspense,
     watch,
@@ -127,13 +129,18 @@ export function useContractRead(
     watch,
   ])
 
-  return useQuery(queryKey_, queryFn, {
+  const contractReadQueryResult = useQuery(queryKey_, queryFn, {
     cacheTime,
     enabled,
+    initialData,
     staleTime,
     suspense,
     onError,
     onSettled,
     onSuccess,
+  })
+
+  return useDeferResult(contractReadQueryResult, noopQueryResult, {
+    enabled: !initialData,
   })
 }

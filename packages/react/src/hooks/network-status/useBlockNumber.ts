@@ -8,7 +8,8 @@ import {
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
 import { useProvider, useWebSocketProvider } from '../providers'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 type UseBlockNumberArgs = Partial<FetchBlockNumberArgs> & {
   /** Subscribe to changes */
@@ -30,6 +31,7 @@ export function useBlockNumber({
   cacheTime = 0,
   chainId: chainId_,
   enabled = true,
+  initialData,
   staleTime,
   suspense,
   watch = false,
@@ -59,13 +61,18 @@ export function useBlockNumber({
     }
   }, [chainId, provider, queryClient, watch, webSocketProvider])
 
-  return useQuery(queryKey({ chainId }), queryFn, {
+  const blockNumberQueryResult = useQuery(queryKey({ chainId }), queryFn, {
     cacheTime,
     enabled,
+    initialData,
     staleTime,
     suspense,
     onError,
     onSettled,
     onSuccess,
+  })
+
+  return useDeferResult(blockNumberQueryResult, noopQueryResult, {
+    enabled: !initialData,
   })
 }

@@ -3,7 +3,7 @@ import { ConnectArgs, ConnectResult, connect } from '@wagmi/core'
 import { UseMutationOptions, UseMutationResult, useMutation } from 'react-query'
 
 import { useClient } from '../../context'
-import { useForceUpdate } from '../utils'
+import { useDeferResult, useForceUpdate } from '../utils'
 
 export type UseConnectArgs = Partial<ConnectArgs>
 
@@ -20,6 +20,24 @@ export type UseConnectConfig = {
   onError?: MutationOptions['onError']
   /** Function to invoke when connect is settled (either successfully connected, or an error has thrown). */
   onSettled?: MutationOptions['onSettled']
+}
+
+const noopResult = {
+  activeConnector: undefined,
+  connect: () => undefined,
+  connectAsync: () => undefined,
+  connectors: [],
+  data: undefined,
+  error: undefined,
+  isConnected: false,
+  isConnecting: true,
+  isDisconnected: false,
+  isError: false,
+  isIdle: false,
+  isReconnecting: false,
+  pendingConnector: undefined,
+  reset: () => undefined,
+  status: 'connecting',
 }
 
 export const mutationKey = (args: UseConnectArgs) => [
@@ -94,7 +112,7 @@ export function useConnect({
   else if (!client.connector || status === 'success') status_ = 'disconnected'
   else status_ = status
 
-  return {
+  const connectResult = {
     activeConnector: client.connector,
     connect,
     connectAsync,
@@ -111,4 +129,6 @@ export function useConnect({
     reset,
     status: status_,
   } as const
+
+  return useDeferResult(connectResult, noopResult)
 }

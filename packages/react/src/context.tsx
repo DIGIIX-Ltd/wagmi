@@ -11,6 +11,8 @@ import { createWebStoragePersister } from 'react-query/createWebStoragePersister
 
 import { deserialize, serialize } from './utils'
 
+export const MountedContext = React.createContext(false)
+
 export type DecoratedWagmiClient<
   TProvider extends providers.BaseProvider = providers.BaseProvider,
   TWebSocketProvider extends providers.WebSocketProvider = providers.WebSocketProvider,
@@ -72,6 +74,8 @@ export type ProviderProps<
 > = {
   /** React-decorated WagmiClient instance */
   client?: DecoratedWagmiClient<TProvider, TWebSocketProvider>
+  /** Defers returning result from hooks until the client has mounted */
+  deferResult?: boolean
 }
 export function Provider<
   TProvider extends providers.BaseProvider,
@@ -79,7 +83,12 @@ export function Provider<
 >({
   children,
   client = createClient<TProvider, TWebSocketProvider>(),
+  deferResult,
 }: React.PropsWithChildren<ProviderProps<TProvider, TWebSocketProvider>>) {
+  const [mounted, setMounted] = React.useState(!deferResult)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => (!mounted ? setMounted(true) : undefined), [])
+
   // Attempt to connect on mount
   React.useEffect(() => {
     ;(async () => {
@@ -90,11 +99,13 @@ export function Provider<
   }, [])
 
   return (
-    <Context.Provider value={client as unknown as DecoratedWagmiClient}>
-      <QueryClientProvider client={client.queryClient}>
-        {children}
-      </QueryClientProvider>
-    </Context.Provider>
+    <MountedContext.Provider value={mounted}>
+      <Context.Provider value={client as unknown as DecoratedWagmiClient}>
+        <QueryClientProvider client={client.queryClient}>
+          {children}
+        </QueryClientProvider>
+      </Context.Provider>
+    </MountedContext.Provider>
   )
 }
 

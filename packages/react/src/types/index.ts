@@ -15,6 +15,7 @@ export type QueryConfig<Data, Error> = {
   cacheTime?: UseQueryOptions<Data, Error>['cacheTime']
   /** Set this to `false` to disable this query from automatically running */
   enabled?: UseQueryOptions<Data, Error>['enabled']
+  initialData?: UseQueryOptions<Data, Error>['initialData']
   /**
    * The time in milliseconds after data is considered stale.
    * If set to Infinity, the data will never be considered stale.

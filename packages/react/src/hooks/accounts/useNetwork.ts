@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from 'react-query'
 
 import { useClient } from '../../context'
 import { MutationConfig } from '../../types'
-import { useForceUpdate } from '../utils'
+import { useDeferResult, useForceUpdate } from '../utils'
 
 export type UseNetworkArgs = Partial<SwitchNetworkArgs>
 
@@ -19,6 +19,23 @@ export type UseNetworkConfig = MutationConfig<
   Error,
   SwitchNetworkArgs
 >
+
+const noopResult = {
+  activeChain: undefined,
+  chains: [],
+  data: undefined,
+  error: undefined,
+  isError: false,
+  isIdle: true,
+  isLoading: false,
+  isSuccess: false,
+  pendingChainId: undefined,
+  reset: () => undefined,
+  status: 'idle',
+  switchNetwork: undefined,
+  switchNetworkAsync: undefined,
+  variables: undefined,
+}
 
 export const mutationKey = (args: UseNetworkArgs) => [
   { entity: 'switchNetwork', ...args },
@@ -83,7 +100,7 @@ export function useNetwork({
     [chainId, mutateAsync],
   )
 
-  return {
+  const networkResult = {
     activeChain: network.current.chain,
     chains: network.current.chains ?? [],
     data,
@@ -101,4 +118,6 @@ export function useNetwork({
       : undefined,
     variables,
   } as const
+
+  return useDeferResult(networkResult, noopResult)
 }

@@ -45,6 +45,36 @@ type QueryResult<TData, TError> = Pick<
   >
 }
 
+export const noopQueryResult: Omit<
+  QueryResult<undefined, undefined>,
+  'refetch'
+> = {
+  data: undefined,
+  error: undefined,
+  fetchStatus: 'fetching',
+  internal: {
+    dataUpdatedAt: 0,
+    errorUpdatedAt: 0,
+    failureCount: 0,
+    isFetchedAfterMount: false,
+    isLoadingError: false,
+    isPaused: false,
+    isPlaceholderData: false,
+    isPreviousData: false,
+    isRefetchError: false,
+    isStale: false,
+    remove: () => null,
+  },
+  isError: false,
+  isFetched: false,
+  isFetching: true,
+  isIdle: false,
+  isLoading: true,
+  isRefetching: false,
+  isSuccess: false,
+  status: 'loading',
+}
+
 export function useQuery<
   TQueryFnData,
   TError,

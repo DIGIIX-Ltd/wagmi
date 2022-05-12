@@ -1,7 +1,8 @@
 import { FetchTokenArgs, FetchTokenResult, fetchToken } from '@wagmi/core'
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseTokenArgs = Partial<FetchTokenArgs>
 
@@ -28,6 +29,7 @@ export function useToken({
   formatUnits = 'ether',
   cacheTime,
   enabled = true,
+  initialData,
   staleTime = 1_000 * 60 * 60 * 24, // 24 hours
   suspense,
   onError,
@@ -36,13 +38,22 @@ export function useToken({
 }: UseTokenArgs & UseTokenConfig = {}) {
   const chainId = useChainId({ chainId: chainId_ })
 
-  return useQuery(queryKey({ address, chainId, formatUnits }), queryFn, {
-    cacheTime,
-    enabled: Boolean(enabled && address),
-    staleTime,
-    suspense,
-    onError,
-    onSettled,
-    onSuccess,
+  const tokenQueryResult = useQuery(
+    queryKey({ address, chainId, formatUnits }),
+    queryFn,
+    {
+      cacheTime,
+      enabled: Boolean(enabled && address),
+      initialData,
+      staleTime,
+      suspense,
+      onError,
+      onSettled,
+      onSuccess,
+    },
+  )
+
+  return useDeferResult(tokenQueryResult, noopQueryResult, {
+    enabled: !initialData,
   })
 }

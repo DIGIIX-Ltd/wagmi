@@ -3,7 +3,8 @@ import { FetchSignerResult, fetchSigner, watchSigner } from '@wagmi/core'
 import { useQueryClient } from 'react-query'
 
 import { QueryConfig } from '../../types'
-import { useQuery } from '../utils'
+import { useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseSignerConfig = Omit<
   QueryConfig<FetchSignerResult, Error>,
@@ -15,13 +16,15 @@ export const queryKey = () => [{ entity: 'signer' }] as const
 const queryFn = () => fetchSigner()
 
 export function useSigner({
+  initialData,
   suspense,
   onError,
   onSettled,
   onSuccess,
 }: UseSignerConfig = {}) {
-  const signerQuery = useQuery(queryKey(), queryFn, {
+  const signerQueryResult = useQuery(queryKey(), queryFn, {
     cacheTime: 0,
+    initialData,
     staleTime: 0,
     suspense,
     onError,
@@ -37,5 +40,7 @@ export function useSigner({
     return unwatch
   }, [queryClient])
 
-  return signerQuery
+  return useDeferResult(signerQueryResult, noopQueryResult, {
+    enabled: !initialData,
+  })
 }

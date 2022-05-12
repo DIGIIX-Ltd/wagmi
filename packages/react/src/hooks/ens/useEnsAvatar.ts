@@ -5,7 +5,8 @@ import {
 } from '@wagmi/core'
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseEnsAvatarArgs = Partial<FetchEnsAvatarArgs>
 
@@ -31,6 +32,7 @@ export function useEnsAvatar({
   cacheTime,
   chainId: chainId_,
   enabled = true,
+  initialData,
   staleTime = 1_000 * 60 * 60 * 24, // 24 hours
   suspense,
   onError,
@@ -39,13 +41,22 @@ export function useEnsAvatar({
 }: UseEnsAvatarArgs & UseEnsLookupConfig = {}) {
   const chainId = useChainId({ chainId: chainId_ })
 
-  return useQuery(queryKey({ addressOrName, chainId }), queryFn, {
-    cacheTime,
-    enabled: Boolean(enabled && addressOrName && chainId),
-    staleTime,
-    suspense,
-    onError,
-    onSettled,
-    onSuccess,
+  const ensAvatarQueryResult = useQuery(
+    queryKey({ addressOrName, chainId }),
+    queryFn,
+    {
+      cacheTime,
+      enabled: Boolean(enabled && addressOrName && chainId),
+      initialData,
+      staleTime,
+      suspense,
+      onError,
+      onSettled,
+      onSuccess,
+    },
+  )
+
+  return useDeferResult(ensAvatarQueryResult, noopQueryResult, {
+    enabled: !initialData,
   })
 }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useToken } from 'wagmi'
 
 export const Token = () => {
-  const { data, isError, isLoading, getToken } = useToken({
+  const { data, isError, isLoading } = useToken({
     address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
   })
 
@@ -19,7 +19,6 @@ export const Token = () => {
           placeholder="token address"
           value={address}
         />
-        <button onClick={() => getToken({ address })}>fetch</button>
       </div>
     </div>
   )

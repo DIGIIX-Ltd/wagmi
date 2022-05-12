@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from 'wagmi'
 
-import { useIsMounted } from '../hooks'
 import { Balance } from './Balance'
 import { BlockNumber } from './BlockNumber'
 import { ReadContract } from './ReadContract'
@@ -11,7 +10,6 @@ import { Token } from './Token'
 import { WriteContract } from './WriteContract'
 
 export const Account = () => {
-  const isMounted = useIsMounted()
   const account = useAccount()
   const ensAvatar = useEnsAvatar({
     addressOrName: account.data?.address,
@@ -19,6 +17,8 @@ export const Account = () => {
   })
   const ensName = useEnsName({ address: account.data?.address, chainId: 1 })
   const disconnect = useDisconnect()
+
+  console.log(account)
 
   return (
     <div>
@@ -35,12 +35,11 @@ export const Account = () => {
         {account.data?.address && (
           <button onClick={() => disconnect.disconnect()}>Disconnect</button>
         )}
-        {isMounted && account.data?.connector?.name && (
+        {account.data?.connector?.name && (
           <span>Connected to {account.data.connector.name}</span>
         )}
       </div>
-
-      {false && (
+      {true && (
         <>
           {true && (
             <>

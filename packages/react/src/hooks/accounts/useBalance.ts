@@ -3,7 +3,8 @@ import { FetchBalanceArgs, FetchBalanceResult, fetchBalance } from '@wagmi/core'
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
 import { useBlockNumber } from '../network-status'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseBalanceArgs = Partial<FetchBalanceArgs> & {
   /** Subscribe to changes */
@@ -35,6 +36,7 @@ export function useBalance({
   chainId: chainId_,
   enabled = true,
   formatUnits = 'ether',
+  initialData,
   staleTime,
   suspense,
   token,
@@ -44,11 +46,12 @@ export function useBalance({
   onSuccess,
 }: UseBalanceArgs & UseBalanceConfig = {}) {
   const chainId = useChainId({ chainId: chainId_ })
-  const balanceQuery = useQuery(
+  const balanceQueryResult = useQuery(
     queryKey({ addressOrName, chainId, formatUnits, token }),
     queryFn,
     {
       cacheTime,
+      initialData,
       enabled: Boolean(enabled && addressOrName),
       staleTime,
       suspense,
@@ -64,9 +67,11 @@ export function useBalance({
     if (!watch) return
     if (!blockNumber) return
     if (!addressOrName) return
-    balanceQuery.refetch()
+    balanceQueryResult.refetch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blockNumber])
 
-  return balanceQuery
+  return useDeferResult(balanceQueryResult, noopQueryResult, {
+    enabled: !initialData,
+  })
 }

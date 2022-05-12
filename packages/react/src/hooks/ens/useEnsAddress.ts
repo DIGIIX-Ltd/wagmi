@@ -5,7 +5,8 @@ import {
 } from '@wagmi/core'
 
 import { QueryConfig, QueryFunctionArgs } from '../../types'
-import { useChainId, useQuery } from '../utils'
+import { useChainId, useDeferResult, useQuery } from '../utils'
+import { noopQueryResult } from '../utils/useQuery'
 
 export type UseEnsAddressArgs = Partial<FetchEnsAddressArgs>
 
@@ -30,6 +31,7 @@ export function useEnsAddress({
   cacheTime,
   chainId: chainId_,
   enabled = true,
+  initialData,
   name,
   staleTime = 1_000 * 60 * 60 * 24, // 24 hours
   suspense,
@@ -39,13 +41,18 @@ export function useEnsAddress({
 }: UseEnsAddressArgs & UseEnsAddressConfig = {}) {
   const chainId = useChainId({ chainId: chainId_ })
 
-  return useQuery(queryKey({ chainId, name }), queryFn, {
+  const ensAddressQueryResult = useQuery(queryKey({ chainId, name }), queryFn, {
     cacheTime,
     enabled: Boolean(enabled && chainId && name),
+    initialData,
     staleTime,
     suspense,
     onError,
     onSettled,
     onSuccess,
+  })
+
+  return useDeferResult(ensAddressQueryResult, noopQueryResult, {
+    enabled: !initialData,
   })
 }
