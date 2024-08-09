@@ -304,6 +304,10 @@ export function getSidebar() {
             link: '/react/api/hooks/useWalletClient',
           },
           {
+            text: 'useWatchAsset',
+            link: '/react/api/hooks/useWatchAsset',
+          },
+          {
             text: 'useWatchBlocks',
             link: '/react/api/hooks/useWatchBlocks',
           },
@@ -510,6 +514,10 @@ export function getSidebar() {
           {
             text: 'useBlockNumber',
             link: '/vue/api/composables/useBlockNumber',
+          },
+          {
+            text: 'useBytecode',
+            link: '/vue/api/composables/useBytecode',
           },
           { text: 'useChainId', link: '/vue/api/composables/useChainId' },
           { text: 'useChains', link: '/vue/api/composables/useChains' },
@@ -891,6 +899,10 @@ export function getSidebar() {
           {
             text: 'watchAccount',
             link: '/core/api/actions/watchAccount',
+          },
+          {
+            text: 'watchAsset',
+            link: '/core/api/actions/watchAsset',
           },
           {
             text: 'watchBlocks',

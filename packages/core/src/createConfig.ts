@@ -7,6 +7,7 @@ import {
   type Address,
   type Chain,
   type Client,
+  type EIP1193RequestFn,
   createClient,
   type ClientConfig as viem_ClientConfig,
   type Transport as viem_Transport,
@@ -103,7 +104,12 @@ export function createConfig<
     // Set up emitter with uid and add to connector so they are "linked" together.
     const emitter = createEmitter<ConnectorEventMap>(uid())
     const connector = {
-      ...connectorFn({ emitter, chains: chains.getState(), storage }),
+      ...connectorFn({
+        emitter,
+        chains: chains.getState(),
+        storage,
+        transports: rest.transports,
+      }),
       emitter,
       uid: emitter.uid,
     }
@@ -206,6 +212,7 @@ export function createConfig<
   const prefix = '0.0.0-canary-'
   if (version.startsWith(prefix))
     currentVersion = Number.parseInt(version.replace(prefix, ''))
+  // use package major version to version store
   else currentVersion = Number.parseInt(version.split('.')[0] ?? '0')
 
   const store = createStore(
@@ -217,14 +224,10 @@ export function createConfig<
               if (version === currentVersion) return persistedState as State
 
               const initialState = getInitialState()
-              const chainId =
-                persistedState &&
-                typeof persistedState === 'object' &&
-                'chainId' in persistedState &&
-                typeof persistedState.chainId === 'number' &&
-                chains.getState().some((x) => x.id === persistedState.chainId)
-                  ? persistedState.chainId
-                  : initialState.chainId
+              const chainId = validatePersistedChainId(
+                persistedState,
+                initialState.chainId,
+              )
               return { ...initialState, chainId }
             },
             name: 'store',
@@ -243,8 +246,26 @@ export function createConfig<
                 } as unknown as PartializedState['connections'],
                 chainId: state.chainId,
                 current: state.current,
-                status: state.status,
               } satisfies PartializedState
+            },
+            merge(persistedState, currentState) {
+              // `status` should not be persisted as it messes with reconnection
+              if (
+                typeof persistedState === 'object' &&
+                persistedState &&
+                'status' in persistedState
+              )
+                delete persistedState.status
+              // Make sure persisted `chainId` is valid
+              const chainId = validatePersistedChainId(
+                persistedState,
+                currentState.chainId,
+              )
+              return {
+                ...currentState,
+                ...(persistedState as object),
+                chainId,
+              }
             },
             skipHydration: ssr,
             storage: storage as Storage<Record<string, unknown>>,
@@ -253,6 +274,19 @@ export function createConfig<
         : getInitialState,
     ),
   )
+
+  function validatePersistedChainId(
+    persistedState: unknown,
+    defaultChainId: number,
+  ) {
+    return persistedState &&
+      typeof persistedState === 'object' &&
+      'chainId' in persistedState &&
+      typeof persistedState.chainId === 'number' &&
+      chains.getState().some((x) => x.id === persistedState.chainId)
+      ? persistedState.chainId
+      : defaultChainId
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Subscribe to changes
@@ -564,11 +598,17 @@ export type Connector = ReturnType<CreateConnectorFn> & {
   uid: string
 }
 
-export type Transport = (
-  params: Parameters<viem_Transport>[0] & {
+export type Transport<
+  type extends string = string,
+  rpcAttributes = Record<string, any>,
+  eip1193RequestFn extends EIP1193RequestFn = EIP1193RequestFn,
+> = (
+  params: Parameters<
+    viem_Transport<type, rpcAttributes, eip1193RequestFn>
+  >[0] & {
     connectors?: StoreApi<Connector[]> | undefined
   },
-) => ReturnType<viem_Transport>
+) => ReturnType<viem_Transport<type, rpcAttributes, eip1193RequestFn>>
 
 type ClientConfig = LooseOmit<
   viem_ClientConfig,

@@ -1,5 +1,61 @@
 # @wagmi/core
 
+## 2.13.4
+
+### Patch Changes
+
+- [`b4c8971788c70b09479946ecfa998cff2f1b3953`](https://github.com/wevm/wagmi/commit/b4c8971788c70b09479946ecfa998cff2f1b3953) Thanks [@tmm](https://github.com/tmm)! - Made `serialize` and `deserialize` types more permissive.
+
+## 2.13.3
+
+### Patch Changes
+
+- [`871dbdbfe59ac8ad01d1ec6150ea7b091b7b7de4`](https://github.com/wevm/wagmi/commit/871dbdbfe59ac8ad01d1ec6150ea7b091b7b7de4) Thanks [@tmm](https://github.com/tmm)! - Added validation to internal state for persisted `chainId`.
+
+## 2.13.2
+
+### Patch Changes
+
+- [`1b9b523fa9b9dfe839aecdf4b40caa9547d7e594`](https://github.com/wevm/wagmi/commit/1b9b523fa9b9dfe839aecdf4b40caa9547d7e594) Thanks [@tmm](https://github.com/tmm)! - Fixed built-in cookie storage `removeItem` working for all paths.
+
+## 2.13.1
+
+### Patch Changes
+
+- [`07c1227f306d0efb9421d4bb77a774f92f5fcf45`](https://github.com/wevm/wagmi/commit/07c1227f306d0efb9421d4bb77a774f92f5fcf45) Thanks [@tmm](https://github.com/tmm)! - Fixed internal `extractRpcUrls` usage with `unstable_connector`.
+
+## 2.13.0
+
+### Minor Changes
+
+- [#4162](https://github.com/wevm/wagmi/pull/4162) [`a73a7737b756886b388f120ae423e72cca53e8a0`](https://github.com/wevm/wagmi/commit/a73a7737b756886b388f120ae423e72cca53e8a0) Thanks [@jxom](https://github.com/jxom)! - Added functionality for consumer-defined RPC URLs (`config.transports`) to be propagated to the WalletConnect & MetaMask Connectors.
+
+## 2.12.2
+
+### Patch Changes
+
+- [`5bc8c8877810b2eec24a829df87dce40a51e6f20`](https://github.com/wevm/wagmi/commit/5bc8c8877810b2eec24a829df87dce40a51e6f20) Thanks [@tmm](https://github.com/tmm)! - Fixed reconnection when `status` is defined.
+
+## 2.12.1
+
+### Patch Changes
+
+- [#4146](https://github.com/wevm/wagmi/pull/4146) [`cc996e08e930c9e88cf753a1e874652059e81a3b`](https://github.com/wevm/wagmi/commit/cc996e08e930c9e88cf753a1e874652059e81a3b) Thanks [@jxom](https://github.com/jxom)! - Updated `@safe-global/safe-apps-sdk` + `@safe-global/safe-apps-provider` dependencies.
+
+## 2.12.0
+
+### Minor Changes
+
+- [#4128](https://github.com/wevm/wagmi/pull/4128) [`5581a810ef70308e99c6f8b630cd4bca59f64afc`](https://github.com/wevm/wagmi/commit/5581a810ef70308e99c6f8b630cd4bca59f64afc) Thanks [@dalechyn](https://github.com/dalechyn)! - Added `watchAsset` action.
+
+## 2.11.8
+
+### Patch Changes
+
+- [`b08013eaa9ce97c02f8a7128ea400e3da7ef74bb`](https://github.com/wevm/wagmi/commit/b08013eaa9ce97c02f8a7128ea400e3da7ef74bb) Thanks [@tmm](https://github.com/tmm)! - Fixed injected accounts ordering for `'wallet_requestPermissions'`.
+
+- [`d3814ab4b88f9f0e052b53bc3d458df87b43f01d`](https://github.com/wevm/wagmi/commit/d3814ab4b88f9f0e052b53bc3d458df87b43f01d) Thanks [@jxom](https://github.com/jxom)! - Updated `mipd` dependency.
+
 ## 2.11.7
 
 ### Patch Changes

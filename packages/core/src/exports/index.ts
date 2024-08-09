@@ -351,6 +351,13 @@ export {
 } from '../actions/watchAccount.js'
 
 export {
+  type WatchAssetParameters,
+  type WatchAssetErrorType,
+  type WatchAssetReturnType,
+  watchAsset,
+} from '../actions/watchAsset.js'
+
+export {
   type WatchBlocksParameters,
   type WatchBlocksReturnType,
   watchBlocks,
@@ -535,6 +542,8 @@ export {
 export { deepEqual } from '../utils/deepEqual.js'
 
 export { deserialize } from '../utils/deserialize.js'
+
+export { extractRpcUrls } from '../utils/extractRpcUrls.js'
 
 export { normalizeChainId } from '../utils/normalizeChainId.js'
 

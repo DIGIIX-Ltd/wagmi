@@ -51,6 +51,11 @@ export function useSponsors() {
           url: 'https://brave.com',
           img: 'brave-light.svg',
         },
+        {
+          name: 'Linea',
+          url: 'https://linea.build',
+          img: 'linea-light.svg',
+        },
       ],
       silver: [
         {
@@ -132,6 +137,11 @@ export function useSponsors() {
           name: 'Reservoir',
           url: 'https://reservoir.tools',
           img: 'reservoir-light.svg',
+        },
+        {
+          name: 'Uniswap',
+          url: 'https://uniswap.org',
+          img: 'uniswap-light.svg',
         },
       ],
     }
